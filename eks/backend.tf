@@ -16,6 +16,5 @@ terraform {
 }
 
 provider "aws" {
-  profile = "AmanPathak-DevOps"
   region  = var.aws-region
 }
