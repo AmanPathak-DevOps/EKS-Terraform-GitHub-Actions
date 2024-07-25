@@ -21,8 +21,8 @@ permissions:
   contents: read
 
 jobs:
-  terraform:
     name: 'Terraform'
+    uses: actions/checkout@v4
     runs-on: ubuntu-latest
     environment: production
 
