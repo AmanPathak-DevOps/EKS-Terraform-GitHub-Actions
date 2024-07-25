@@ -99,15 +99,18 @@ jobs:
     needs: Terraform-Initializing
 
     steps:
-
+        
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: 1.8.4
-
         
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    - name: Terraform Init
+      working-directory: eks
+      run: terraform init
       
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
@@ -124,16 +127,19 @@ jobs:
     
     steps:
 
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: 1.8.4
 
-        
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    - name: Terraform Init
+      working-directory: eks
+      run: terraform init
 
-        
+      
     - name: Terraform Plan
       if: ${{ github.event.inputs.action  == 'plan' }}
       working-directory: eks
