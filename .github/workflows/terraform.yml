@@ -79,6 +79,9 @@ jobs:
     needs: Setting-Up-Terraform
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       run: terraform init
@@ -88,6 +91,9 @@ jobs:
     needs: Terraform-Initializing
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
       run: terraform fmt
@@ -97,12 +103,15 @@ jobs:
     needs: Terraform-Formatting
     
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
     - name: Terraform Plan
       if: ${{ github.event.inputs.action  == 'plan' }}
       # working-directory: eks
       # Generates an execution plan for Terraform
       run: |
-        cd eks
+        ls
         terraform plan -var-file=${{ github.event.inputs.tfvars_file }} -input=false
 
     
