@@ -94,28 +94,16 @@ jobs:
       working-directory: eks
       run: terraform init
 
-    - name: Upload Terraform state
-      uses: actions/upload-artifact@v3
-      with:
-        name: terraform-state
-        path: .terraform
-
-  Terraform-Formatting:
+  Terraform-Formatting-Validating:
     runs-on: ubuntu-latest
     needs: Terraform-Initializing
 
     steps:
 
-    # - name: Setup Terraform
-    #   uses: hashicorp/setup-terraform@v1
-    #   with:
-    #     terraform_version: 1.8.4
-
-    - name: Download Terraform state
-      uses: actions/download-artifact@v3
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
       with:
-        name: terraform-state
-        path: .terraform
+        terraform_version: 1.8.4
 
         
     - name: Checkout repository
@@ -126,26 +114,25 @@ jobs:
       working-directory: eks
       run: terraform fmt
 
+    - name: Terraform Validate
+      working-directory: eks
+      run: terraform validate
+
   Terraform-Action:
     runs-on: ubuntu-latest
-    needs: Terraform-Formatting
+    needs: Terraform-Formatting-Validating
     
     steps:
 
-    # - name: Setup Terraform
-    #   uses: hashicorp/setup-terraform@v1
-    #   with:
-    #     terraform_version: 1.8.4
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.8.4
 
         
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Download Terraform state
-      uses: actions/download-artifact@v3
-      with:
-        name: terraform-state
-        path: .terraform
         
     - name: Terraform Plan
       if: ${{ github.event.inputs.action  == 'plan' }}
