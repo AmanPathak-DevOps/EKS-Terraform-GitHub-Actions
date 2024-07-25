@@ -102,7 +102,7 @@ jobs:
       # working-directory: eks
       # Generates an execution plan for Terraform
       run: |
-        ls
+        cd eks
         terraform plan -var-file=${{ github.event.inputs.tfvars_file }} -input=false
 
     
