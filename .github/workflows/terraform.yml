@@ -99,11 +99,10 @@ jobs:
     steps:
     - name: Terraform Plan
       if: ${{ github.event.inputs.action  == 'plan' }}
-      working-directory: eks
+      # working-directory: eks
       # Generates an execution plan for Terraform
       run: |
-        pwd 
-        ls
+        ls EKS-Terraform-GitHub-Actions
         terraform plan -var-file=${{ github.event.inputs.tfvars_file }} -input=false
 
     
