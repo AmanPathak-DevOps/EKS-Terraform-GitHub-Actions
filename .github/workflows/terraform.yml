@@ -84,6 +84,7 @@ jobs:
       
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
+      working-directory: eks
       run: terraform init
 
   Terraform-Formatting:
@@ -96,6 +97,7 @@ jobs:
       
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
+      working-directory: eks
       run: terraform fmt
 
   Terraform-Action:
@@ -108,10 +110,9 @@ jobs:
       
     - name: Terraform Plan
       if: ${{ github.event.inputs.action  == 'plan' }}
-      # working-directory: eks
+      working-directory: eks
       # Generates an execution plan for Terraform
       run: |
-        ls
         terraform plan -var-file=${{ github.event.inputs.tfvars_file }} -input=false
 
     
