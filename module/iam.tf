@@ -64,7 +64,7 @@ resource "aws_iam_role_policy_attachment" "eks-AmazonEC2ContainerRegistryReadOnl
 
 resource "aws_iam_role_policy_attachment" "eks-AmazonEBSCSIDriverPolicy" {
   count      = var.is_eks_nodegroup_role_enabled ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEBSCSIDriverPolicy"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
   role       = aws_iam_role.eks-nodegroup-role[count.index].name
 }
 
