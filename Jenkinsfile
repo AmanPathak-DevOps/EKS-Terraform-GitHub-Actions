@@ -23,12 +23,19 @@ pipeline {
             }
         }
         stage('Init') {
-            steps {
-                withAWS(credentials: 'aws-creds', region: 'us-east-1') {
-                sh 'terraform -chdir=eks/ init'
+    steps {
+        withAWS(credentials: 'aws-creds', region: 'us-east-1') {
+            script {
+                try {
+                    sh 'terraform -chdir=eks/ init -migrate-state'
+                } catch (Exception e) {
+                    error "Terraform init failed: ${e.message}"
                 }
             }
         }
+    }
+}
+
         stage('Validate') {
             steps {
                 withAWS(credentials: 'aws-creds', region: 'us-east-1') {
