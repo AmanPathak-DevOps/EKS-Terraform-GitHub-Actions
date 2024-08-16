@@ -27,7 +27,7 @@ pipeline {
         withAWS(credentials: 'aws-creds', region: 'us-east-1') {
             script {
                 try {
-                    sh 'terraform -chdir=eks/ init -migrate-state'
+                    sh 'terraform -chdir=eks/ init -reconfigure'
                 } catch (Exception e) {
                     error "Terraform init failed: ${e.message}"
                 }
