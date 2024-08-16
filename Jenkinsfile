@@ -19,16 +19,23 @@ pipeline {
         }
         stage('Git Pulling') {
             steps {
-                git branch: 'master', url: 'https://github.com/AmanPathak-DevOps/EKS-Terraform-GitHub-Actions.git'
+                git branch: 'feature-branch', url: 'https://github.com/vamsi676/EKS-Terraform-GitHub-Actions.git'
             }
         }
         stage('Init') {
-            steps {
-                withAWS(credentials: 'aws-creds', region: 'us-east-1') {
-                sh 'terraform -chdir=eks/ init'
+    steps {
+        withAWS(credentials: 'aws-creds', region: 'us-east-1') {
+            script {
+                try {
+                    sh 'terraform -chdir=eks/ init -reconfigure'
+                } catch (Exception e) {
+                    error "Terraform init failed: ${e.message}"
                 }
             }
         }
+    }
+}
+
         stage('Validate') {
             steps {
                 withAWS(credentials: 'aws-creds', region: 'us-east-1') {
