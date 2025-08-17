@@ -58,7 +58,6 @@ resource "aws_eks_node_group" "ondemand-node" {
     max_size     = var.max_capacity_on_demand
   }
 
-
   subnet_ids = [aws_subnet.private-subnet[0].id, aws_subnet.private-subnet[1].id, aws_subnet.private-subnet[2].id]
 
   instance_types = var.ondemand_instance_types
@@ -71,6 +70,10 @@ resource "aws_eks_node_group" "ondemand-node" {
     max_unavailable = 1
   }
   tags = {
+    "Name" = "${var.cluster-name}-ondemand-nodes"
+  }
+  tags_all = {
+    "kubernetes.io/cluster/${var.cluster-name}" = "owned"
     "Name" = "${var.cluster-name}-ondemand-nodes"
   }
 
@@ -89,7 +92,6 @@ resource "aws_eks_node_group" "spot-node" {
     max_size     = var.max_capacity_spot
   }
 
-
   subnet_ids = [aws_subnet.private-subnet[0].id, aws_subnet.private-subnet[1].id, aws_subnet.private-subnet[2].id]
 
   instance_types = var.spot_instance_types
@@ -100,6 +102,10 @@ resource "aws_eks_node_group" "spot-node" {
   }
   tags = {
     "Name" = "${var.cluster-name}-spot-nodes"
+  }
+  tags_all = {
+    "kubernetes.io/cluster/${var.cluster-name}" = "owned"
+    "Name" = "${var.cluster-name}-ondemand-nodes"
   }
   labels = {
     type      = "spot"
