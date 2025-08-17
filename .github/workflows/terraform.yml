@@ -1,4 +1,4 @@
-name: 'Terraform'
+name: 'EKS-Creation-Using-Terraform'
 
 on:
   workflow_dispatch:
@@ -9,38 +9,25 @@ on:
         default: 'dev.tfvars'
       action:
         type: choice
-        description: 'Apply or Destroy'
+        description: 'Terraform Action'
         options:
-        - plan
-        - apply
-        - destroy
+          - plan
+          - apply
+          - destroy
         required: true
         default: 'apply'
 
 env:
-      AWS_REGION: us-east-2
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: us-east-1
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 permissions:
   contents: read
 
 jobs:
-  
-    # name: 'Terraform'
-    # uses: actions/checkout@v4
-    # runs-on: ubuntu-latest
-    # environment: production
-
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    # defaults:
-    #   run:
-    #     shell: bash
-    #     working-directory: eks
-
-        
-
-  CheckOut-Repo:
+  terraform:
+    name: Terraform ${{ github.event.inputs.action }}
     runs-on: ubuntu-latest
     environment: production
 
@@ -49,112 +36,46 @@ jobs:
         shell: bash
         working-directory: eks
 
-    env:
-      AWS_REGION: us-east-2
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    
-    
-    # needs: terraform
-    
     steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  Setting-Up-Terraform:
-    runs-on: ubuntu-latest
-    
-    needs: CheckOut-Repo
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.9.3
 
-    steps:
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: 1.9.3
+      # Optional: Enable caching to speed up init
+      - name: Cache Terraform
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.terraform.d/plugin-cache
+            .terraform
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/*.tf') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
 
-  Terraform-Initializing:
-    runs-on: ubuntu-latest
+      - name: Terraform Init
+        run: terraform init
 
-    needs: Setting-Up-Terraform
+      - name: Terraform Format Check
+        run: terraform fmt -check -diff
 
-    steps:
+      - name: Terraform Validate
+        run: terraform validate
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: 1.9.3
-        
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      working-directory: eks
-      run: terraform init
+      - name: Terraform Plan
+        if: ${{ github.event.inputs.action == 'plan' }}
+        run: |
+          terraform plan -var-file=${{ github.event.inputs.tfvars_file }} -input=false
 
-  Terraform-Formatting-Validating:
-    runs-on: ubuntu-latest
-    needs: Terraform-Initializing
+      - name: Terraform Apply
+        if: ${{ github.event.inputs.action == 'apply' }}
+        run: |
+          terraform apply -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
 
-    steps:
-        
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: 1.9.3
-        
-    - name: Terraform Init
-      working-directory: eks
-      run: terraform init
-      
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      working-directory: eks
-      run: terraform fmt
-
-    - name: Terraform Validate
-      working-directory: eks
-      run: terraform validate
-
-  Terraform-Action:
-    runs-on: ubuntu-latest
-    needs: Terraform-Formatting-Validating
-    
-    steps:
-
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: 1.9.3
-
-    - name: Terraform Init
-      working-directory: eks
-      run: terraform init
-
-      
-    - name: Terraform Plan
-      if: ${{ github.event.inputs.action  == 'plan' }}
-      working-directory: eks
-      # Generates an execution plan for Terraform
-      run: |
-        terraform plan -var-file=${{ github.event.inputs.tfvars_file }} -input=false
-
-    
-      # Apply the Terraform Configuration according to the parameter
-    - name: Terraform Action
-      if: ${{ github.event.inputs.action  == 'apply' }}
-      working-directory: eks
-      run: terraform ${{ github.event.inputs.action }} -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
-
-    - name: Terraform Destroy
-      if: ${{ github.event.inputs.action == 'destroy' }}
-      working-directory: eks
-      run: terraform ${{ github.event.inputs.action }} -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
+      - name: Terraform Destroy
+        if: ${{ github.event.inputs.action == 'destroy' }}
+        run: |
+          terraform destroy -auto-approve -var-file=${{ github.event.inputs.tfvars_file }} -input=false
