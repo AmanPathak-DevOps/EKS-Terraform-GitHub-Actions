@@ -1,4 +1,4 @@
-name: 'EKS-Creation-Using-Terraform'
+name: 'EKS-Terraform-Plan'
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: action/checkout@v5
+        uses: actions/checkout@v5
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
