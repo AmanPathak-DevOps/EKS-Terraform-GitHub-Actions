@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -48,7 +48,7 @@ jobs:
 
       # Optional: Enable caching to speed up init
       - name: Cache Terraform
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.terraform.d/plugin-cache
