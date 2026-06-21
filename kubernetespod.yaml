@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+    - name: jnlp
+      image: jenkins/inbound-agent:latest
+
+    - name: node
+      image: node:18
+      command: ["cat"]
+      tty: true
+
+    - name: python
+      image: python:3.11
+      command: ["cat"]
+      tty: true
+

@@ -1,4 +1,4 @@
-# 🚀 Configuring Production-Ready EKS Clusters with Terraform and GitHub Actions
+## 🚀 Configuring Production-Ready EKS Clusters with Terraform and GitHub Actions
 [![LinkedIn](https://img.shields.io/badge/Connect%20with%20me%20on-LinkedIn-blue.svg)](https://www.linkedin.com/in/aman-devops/)
 [![Discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/jdzF8kTtw2)
 [![Medium](https://img.shields.io/badge/Medium-12100E?style=for-the-badge&logo=medium&logoColor=white)](https://medium.com/@amanpathakdevops)

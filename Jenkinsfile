@@ -11,15 +11,37 @@ properties([
 ])
 pipeline {
     agent any
+    // kubernetes {
+    //     label "${SERVICE_NAME}-DEV"
+    //     yamlFile "kubernetespod.yaml"
+    //     idleMinutes 1
+    //  }
+    // }
     stages {
-        stage('Preparing') {
-            steps {
-                sh 'echo Preparing'
-            }
-        }
+        // stage('Preparing') {
+        //     steps {
+        //         sh 'echo Preparing'
+        //     }
+        // }
+        // stage('Node Task') {
+        //     steps {
+        //         container('node') {
+        //             sh 'node -v'
+        //         }
+        //     }
+        // }
+
+        // stage('Python Task') {
+        //     steps {
+        //         container('python') {
+        //             sh 'python3 --version'
+        //         }
+        //     }
+        // }
         stage('Git Pulling') {
+
             steps {
-                git branch: 'master', url: 'https://github.com/AmanPathak-DevOps/EKS-Terraform-GitHub-Actions.git'
+                git branch: 'master', url: 'https://github.com/manojbangari/EKS-Terraform-GitHub-Actions.git'
             }
         }
         stage('Init') {
